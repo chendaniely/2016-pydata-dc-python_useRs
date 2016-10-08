@@ -1,0 +1,18 @@
+https://github.com/wesm/feather
+
+# From R
+
+library(feather)
+library(ggplot2)
+
+df <- diamonds
+head(df)
+
+write_feather(df, 'diamonds.feather')
+df_f <- read_feather('diamonds.feather')
+
+
+# From Python
+
+df_f = feather.read_dataframe('diamonds.feather')
+df_f.head()

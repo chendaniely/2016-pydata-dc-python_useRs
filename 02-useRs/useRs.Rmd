@@ -1,0 +1,290 @@
+---
+title: "useRs"
+author: "Daniel Chen"
+output:
+  ioslides_presentation:
+    keep_md: yes
+    widescreen: yes
+  slidy_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd('~/git/2016-pydata-dc-python_useRs/02-useRs/')
+```
+
+## How to get it?
+
+Google 'R'
+
+## How to get it?
+
+- https://www.r-project.org/
+- https://www.rstudio.com/products/rstudio/download/preview/
+
+- `conda install -c r r-essentials`
+- `jupyter notebook`
+
+## Using it
+
+Nothing to import!
+
+```{r}
+ebola_df <- read.csv('../data/country_timeseries.csv', stringsAsFactors = FALSE)
+head(ebola_df)
+```
+
+## Using it - tidyverse
+
+```{r}
+library(readr)
+library(readxl)
+library(haven)
+
+ebola_df_tv <- read_csv('../data/country_timeseries.csv')
+```
+
+## Using it - tidyverse
+
+```{r}
+ebola_df_tv2 <- readr::read_csv('../data/country_timeseries.csv')
+```
+
+## Using it
+
+```{r}
+dim(ebola_df_tv)
+```
+
+```{r}
+summary(ebola_df_tv)
+```
+
+## Subsetting in R
+
+```{r}
+ebola_df$Day
+```
+
+## Subsetting in R
+```{r}
+ebola_df[, 'Day']
+```
+
+## Subsetting in R
+```{r}
+head(ebola_df[, c('Day', 'Cases_Guinea')])
+```
+
+## Subsetting in R
+```{r}
+head(ebola_df[, c(1, 2)]) # 1 indexed
+```
+
+## Subsetting in R
+```{r}
+ebola_df[ebola_df$Cases_SierraLeone > 5000, c(1, 2)]
+```
+
+## Getting the types of things
+
+```{r}
+print(class(ebola_df$Day))
+print(class(ebola_df[, c('Day', 'Cases_Guinea')]))
+```
+
+## Creating new columns
+```{r}
+dim(ebola_df)
+```
+
+```{r}
+library(magrittr)
+ebola_df %>% head()
+```
+
+## Creating new columns
+```{r}
+ebola_df$some_deaths <- ebola_df$Deaths_Guinea + ebola_df$Deaths_Liberia
+
+ebola_df %>% dim() %>% print()
+ebola_df %>% head() %>% print()
+```
+
+## Creating new columns - tidyverse
+
+```{r}
+library(dplyr)
+```
+
+## Creating new columns - tidyverse
+```{r}
+ebola_df <- ebola_df %>%
+    mutate(some_deaths2 = Deaths_Guinea + Deaths_Liberia)
+ebola_df %>% dim() %>% print()
+ebola_df %>% head() %>% print()
+```
+
+## Missing Values
+
+```{r}
+NA
+```
+
+## Missing Values
+```{r}
+is.na(NA)
+```
+
+```{r}
+is.null(NULL)
+```
+
+## Combining Data
+```{r}
+# using the readr package
+c1 = read_csv('../data/concat_1.csv')
+c2 = read_csv('../data/concat_2.csv')
+```
+
+## Combining Data
+
+```{r}
+rbind(c1, c2)
+```
+
+## Combining Data
+
+```{r}
+cbind(c1, c2)
+```
+
+## Combining Data
+```{r}
+survey_visited = read_csv('../data/survey_visited.csv')
+survey_site = read_csv('../data/survey_site.csv')
+```
+
+## Combining Data
+```{r}
+merge(x = survey_visited, y = survey_site,
+      by.x = 'site', by.y = 'name',
+      all.x = TRUE, all.y = TRUE)
+```
+
+## Combining Data - tidyverse
+```{r}
+# from dplyr
+survey_visited %>%
+    full_join(survey_site, by = c('site' = 'name'))
+# left_join
+# right_join
+# innder_join
+```
+
+
+## Vectored operations
+```{r}
+gapminder <- read_tsv('../data/gapminder.tsv')
+```
+
+```{r}
+lapply(X = gapminder, FUN = class)
+```
+
+## Vectored operations
+
+```{r}
+# margin 1 is rows, 2 is columns
+gapminder$lifeExpPerCap <- apply(
+    X = gapminder, MARGIN = 1,
+    FUN = function(x){as.numeric(x['lifeExp']) / as.numeric(x['pop'])})
+```
+
+## Vectored operations
+
+```{r}
+calc_life_exp_per_cap <- function(row_of_data){
+    life_exp_per_cap <- as.numeric(row_of_data['lifeExp']) / as.numeric(row_of_data['pop'])
+    return(life_exp_per_cap)
+}
+gapminder$lifeExpPerCap2 <- apply(X = gapminder, MARGIN = 1, FUN = calc_life_exp_per_cap)
+```
+
+## Vectored operations
+
+```{r}
+all(gapminder$lifeExpPerCap == gapminder$lifeExpPerCap2)
+```
+
+## Grouped operations
+
+- I just use `dplyr` and the tidyverse stack for this
+- Jared Lander has a talk about performance between base-r and various packages:
+    - Making R Go Faster And Bigger
+    - https://www.youtube.com/watch?v=jsK-tJWA46Q
+
+## Grouped operations
+
+<img src='https://github.com/chendaniely/2016-pydata-dc-python_useRs/raw/master/img/jared_r_benches.png', height=500>
+
+## Grouped operations
+
+```{r}
+gapminder %>%
+    group_by(year) %>%
+    summarize(avg_lifeExp = mean(lifeExp),
+              avg_gdpPercap = mean(gdpPercap))
+```
+
+## Fit a model
+
+Nothing to import!
+
+## Fit a model
+
+```{r}
+model <- lm(formula = lifeExp ~ gdpPercap, data = gapminder)
+```
+
+## Fit a model
+
+```{r}
+summary(model)
+```
+
+## Fit a model
+
+- Broom package by David Robinson, PhD
+    - https://github.com/dgrtwo/broom
+    - https://www.youtube.com/watch?v=7VGPUBWGv6g
+
+```{r}
+library(broom)
+
+tidy(model)
+```
+
+## More tidyverse things
+
+- Hadley Wickham, PhD
+    - http://vita.had.co.nz/papers/tidy-data.pdf
+    - https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html
+    - https://cran.rstudio.com/web/packages/dplyr/vignettes/
+    - `tidyr` `dplyr` `purrr`
+
+## These slides
+
+`knitr` library and `RMarkdown`
+
+```
+---
+title: "useRs"
+author: "Daniel Chen"
+output:
+  ioslides_presentation:
+    keep_md: yes
+    widescreen: yes
+  slidy_presentation: default
+---
+```
