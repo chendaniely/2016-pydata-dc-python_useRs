@@ -1,0 +1,35 @@
+---
+title: "Pandas for Everyone"
+author: "Daniel Chen"
+output: 
+  ioslides_presentation: 
+    widescreen: yes
+---
+
+## 
+
+`Jooleeahchen@gmail.com`
+
+<center>
+<img src='~/Downloads/pandas_for_everyone_preface.jpg' height=600>
+</center>
+
+## 
+
+<center>
+<img src='~/Downloads/pandas_for_everyone_cover.png' height=600>
+</center>
+
+##
+
+PyData Carolnias 2016: Daniel Chen | Introduction to Pandas
+
+repo: https://github.com/chendaniely/2016-pydata-carolinas-pandas
+
+video: https://www.youtube.com/watch?v=dye7rDktJ2E&list=PLGVZCDnMOq0riEg1pG6D2DCNRCOOHZDRg&index=24
+
+repo: https://github.com/chendaniely/2016-pydata-dc-python_useRs
+
+tweet: `@chendaniely`
+
+
